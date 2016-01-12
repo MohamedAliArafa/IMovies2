@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item android:id="@+id/action_vote"
+        android:title="@string/high_rated"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_desc"
+        android:title="@string/most_pop"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
+    <item android:id="@+id/action_fav"
+    android:title="@string/fav_mov"
+    android:orderInCategory="100"
+    app:showAsAction="never" />
+</menu>
