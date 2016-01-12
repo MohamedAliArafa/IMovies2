@@ -35,8 +35,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     GridView gridView;
     public int id = 0;
 
-    private LoaderManager loaderManager;
-
     private int MOVIES_LOADER = 0;
     private int FAV_LOADER = 1;
     private int HIGH_RATE_LOADER = 2;
@@ -65,8 +63,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        loaderManager = getLoaderManager();
-        loaderManager.restartLoader(MOVIES_LOADER, null, this);
+        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -107,15 +104,15 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int id = item.getItemId();
 
         if (id == R.id.action_vote) {
-            loaderManager.restartLoader(HIGH_RATE_LOADER, null, this);
+            getLoaderManager().initLoader(HIGH_RATE_LOADER, null, this);
             new loadingData(1).execute();
             return true;
         }if (id == R.id.action_desc) {
-            loaderManager.restartLoader(MOVIES_LOADER, null, this);
+            getLoaderManager().initLoader(MOVIES_LOADER, null, this);
             new loadingData(0).execute();
             return true;
         }if (id == R.id.action_fav){
-            loaderManager.restartLoader(FAV_LOADER, null, this);
+            getLoaderManager().initLoader(FAV_LOADER, null, this);
         }
 
         return super.onOptionsItemSelected(item);
