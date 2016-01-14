@@ -19,17 +19,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (findViewById(R.id.fragment_pane) != null){
             mTwoPane = true;
-            if (savedInstanceState == null) {
-                fragmentManager = getSupportFragmentManager();
-                fragmentTransaction = fragmentManager.beginTransaction();
-                if (fragment != null) {
-                    fragmentTransaction.remove(fragment);
+                DetailsFragment fragment2 = new DetailsFragment();
+                fragment2.setID(0);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                if (findViewById(R.id.fragment_pane) != null){
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, fragment2);
+                    fragmentTransaction.commit();
+                }else {
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, fragment2);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+
                 }
-                fragment = new MainActivityFragment();
-                fragmentTransaction.replace(R.id.fragment, fragment);
-//        fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }
+//                fragmentManager = getSupportFragmentManager();
+//                fragmentTransaction = fragmentManager.beginTransaction();
+//                if (fragment != null) {
+//                    fragmentTransaction.remove(fragment);
+//                }
+//                fragment = new MainActivityFragment();
+//                fragmentTransaction.replace(R.id.fragment, fragment);
+////        fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
             }else {
             mTwoPane = false;
                 fragmentManager = getSupportFragmentManager();
@@ -64,12 +76,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//    @Override
-//    public void onBackPressed() {
-//        if (fragmentManager.getBackStackEntryCount() == 1) {
-//            this.finish();
-//        } else {
-//            fragmentManager.popBackStack();
-//        }
-//    }
+    @Override
+    public void onBackPressed() {
+        if (fragmentManager.getBackStackEntryCount() == 1) {
+            this.finish();
+        } else {
+            fragmentManager.popBackStack();
+        }
+    }
 }

@@ -34,6 +34,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     ArrayList<MovieDataModel> movies = new ArrayList<>();
     GridView gridView;
     public int id = 0;
+    private int mLoader;
 
     private int MOVIES_LOADER = 0;
     private int FAV_LOADER = 1;
@@ -63,7 +64,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -83,6 +83,7 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         imageAdapter = new ImageAdapter(getActivity(),null,0);
+        getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         movies.clear();
         return inflater.inflate(R.layout.fragment_main, container, false);
     }
@@ -104,15 +105,18 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         int id = item.getItemId();
 
         if (id == R.id.action_vote) {
-            getLoaderManager().initLoader(HIGH_RATE_LOADER, null, this);
+            mLoader = HIGH_RATE_LOADER;
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             new loadingData(1).execute();
             return true;
         }if (id == R.id.action_desc) {
-            getLoaderManager().initLoader(MOVIES_LOADER, null, this);
+            mLoader = MOVIES_LOADER;
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             new loadingData(0).execute();
             return true;
         }if (id == R.id.action_fav){
-            getLoaderManager().initLoader(FAV_LOADER, null, this);
+            mLoader = FAV_LOADER;
+            getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -120,11 +124,11 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (id == MOVIES_LOADER) {
+        if (mLoader == MOVIES_LOADER) {
             return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, MovieEntry._ID + " ASC");
-        }else if(id == HIGH_RATE_LOADER){
+        }else if(mLoader == HIGH_RATE_LOADER){
             return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, MovieEntry.COLUMN_VOTE_RATE + " DESC");
-        }else if (id == FAV_LOADER){
+        }else if (mLoader == FAV_LOADER){
             return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, MovieEntry.COLUMN_FAV + " = ?",new String[]{String.valueOf(1)}, MovieEntry._ID + " ASC");
         }
         return null;
