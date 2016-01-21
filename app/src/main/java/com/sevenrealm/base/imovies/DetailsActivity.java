@@ -1,89 +1,58 @@
 package com.sevenrealm.base.imovies;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.content.res.Configuration;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v7.widget.Toolbar;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
-
-import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class DetailsActivity extends AppCompatActivity {
 
     int id = 0;
     ImageView imageView;
     TextView title, genre, vote, tag, desc;
-    loading loading;
     Toolbar toolbar;
+
+
+    DetailsFragment fragment;
+    FragmentManager fragmentManager;
+    FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_details);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         Intent intent = getIntent();
         id = intent.getIntExtra("id", 0);
 
-        loading = new loading();
-        loading.execute();
+        fragmentManager = getSupportFragmentManager();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        if (fragment != null) {
+            fragmentTransaction.remove(fragment);
+        }
+        fragment = new DetailsFragment();
+        fragment.setID(id);
+        fragmentTransaction.replace(R.id.fragment, fragment);
+        fragmentTransaction.commit();
     }
 
-    private class loading extends AsyncTask {
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        finish();
+    }
 
-        JSONObject movie;
-        Core core = new Core(getBaseContext());
-
-        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        protected void onPostExecute(Object o) {
-            setContentView(R.layout.activity_full_image);
-            imageView = (ImageView) findViewById(R.id.imageView);
-//            title = (TextView) findViewById(R.id.textView);
-            genre = (TextView) findViewById(R.id.textView2);
-            vote = (TextView) findViewById(R.id.textView3);
-            tag = (TextView) findViewById(R.id.textView4);
-            desc = (TextView) findViewById(R.id.textView5);
-            String url;
-            String gen = "";
-            String v;
-            try {
-                url = core.xlarge_image_url + movie.getString("backdrop_path");
-                Picasso.with(getBaseContext()).load(url).into(imageView);
-//                title.setText(movie.getString("title"));
-                toolbar.setTitle(movie.getString("title"));
-                for (int i = 0; i < movie.getJSONArray("genres").length(); i++) {
-                    gen = gen + " " + movie.getJSONArray("genres").getJSONObject(i).getString("name");
-                }
-                genre.setText(gen);
-                v = "Vote " + movie.getString("vote_average") + " From " + movie.getString("vote_count") + "users";
-                vote.setText(v);
-                tag.setText(movie.getString("tagline"));
-                desc.setText(movie.getString("overview"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected Object doInBackground(Object[] params) {
-            if (id != 0) {
-                try {
-                    movie = core.getMovieById(id);
-                    Log.d("movie", movie.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            return null;
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (id == 0){
+            finish();
         }
     }
 }

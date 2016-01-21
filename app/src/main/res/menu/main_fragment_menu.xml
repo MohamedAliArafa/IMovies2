@@ -15,4 +15,12 @@
     android:title="@string/fav_mov"
     android:orderInCategory="100"
     app:showAsAction="never" />
+
+    <item android:id="@+id/TestDetail"
+        android:title="Movie Detail"
+        android:orderInCategory="500"
+        app:showAsAction="never" />
+
+
+
 </menu>

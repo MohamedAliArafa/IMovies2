@@ -1,16 +1,24 @@
 package com.sevenrealm.base.imovies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.ShareActionProvider;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,14 +31,23 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.sevenrealm.base.imovies.provider.Contract;
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>{
+
+
+
+
+    Toolbar toolbar;
+    CollapsingToolbarLayout collapsingToolbarLayout;
+
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle drawerToggle;
+    CoordinatorLayout rootLayout;
+    FloatingActionButton fabBtn;
     ImageView imageView;
     TextView title,genre,vote,tag,desc,reviewTxt,trailerText;
     loading loading;
@@ -161,9 +178,25 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
+
+
+
+
+
+        rootLayout = (CoordinatorLayout) view.findViewById(R.id.rootLayout);
+
+        fabBtn = (FloatingActionButton) view.findViewById(R.id.fabBtn);
+
+
+
+        collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbarLayout);
+        collapsingToolbarLayout.setTitle("");
+
+
         imageView = (ImageView) view.findViewById(R.id.imageView);
-        title = (TextView) view.findViewById(R.id.textView);
-        genre = (TextView) view.findViewById(R.id.textView2);
+//        title = (TextView) view.findViewById(R.id.textView);
+        //   genre = (TextView) view.findViewById(R.id.textView2);
         vote = (TextView) view.findViewById(R.id.textView3);
         tag = (TextView) view.findViewById(R.id.textView4);
         desc = (TextView) view.findViewById(R.id.textView5);
@@ -171,9 +204,16 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
         reviewTxt = (TextView) view.findViewById(R.id.textView7);
         reviewList = (ListView) view.findViewById(R.id.listView2);
         trailersList = (ListView) view.findViewById(R.id.listView);
-        favButton = (Button) view.findViewById(R.id.favBtn);
+        //favButton = (Button) view.findViewById(R.id.favBtn);
         super.onViewCreated(view, savedInstanceState);
+
+
+
+
+
     }
+
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -196,27 +236,72 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
                 if (cursorMovie.moveToFirst()) {
                     String url = new Core(getActivity()).large_image_url + cursorMovie.getString(COL_MOVIE_IMAGE);
                     Picasso.with(getActivity()).load(url).into(imageView);
-                    title.setText(cursorMovie.getString(COL_MOVIE_TITLE));
-                    genre.setText(cursorMovie.getString(COL_MOVIE_RELEASE).substring(0, 4));
+//                    title.setText(cursorMovie.getString(COL_MOVIE_TITLE));
+                    collapsingToolbarLayout.setTitle(cursorMovie.getString(COL_MOVIE_TITLE));
                     desc.setText(cursorMovie.getString(COL_MOVIE_OVERVIEW));
-                    favButton.setVisibility(View.VISIBLE);
+                    //  favButton.setVisibility(View.VISIBLE);
                     final Core core = new Core(getActivity());
-                    favButton.setVisibility(View.VISIBLE);
+                    //  favButton.setVisibility(View.VISIBLE);
                     if (cursorMovie.getInt(COL_MOVIE_FAV) == 0) {
-                        favButton.setText("Add to Favorite");
+//                        favButton.setText("Add to Favorite");
+                        fabBtn.setImageResource(R.drawable.ic_plus);
                     } else {
-                        favButton.setText("Remove from Favorite");
+                        // favButton.setText("Remove from Favorite");
+                        fabBtn.setImageResource(R.drawable.favon);
                     }
-                    favButton.setOnClickListener(new View.OnClickListener() {
+//                    favButton.setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//                            if (cursorMovie.getInt(COL_MOVIE_FAV) == 0) {
+//                                core.updateFavoriteDB(1, cursorMovie.getString(COL_MOVIE_ID));
+//                            } else {
+//                                core.updateFavoriteDB(0, cursorMovie.getString(COL_MOVIE_ID));
+//                            }
+//                        }
+//                    });
+
+
+
+                    fabBtn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
+
                             if (cursorMovie.getInt(COL_MOVIE_FAV) == 0) {
                                 core.updateFavoriteDB(1, cursorMovie.getString(COL_MOVIE_ID));
+                                fabBtn.setImageResource(R.drawable.favon);
+                                Snackbar.make(rootLayout, "Add to Favorites", Snackbar.LENGTH_SHORT)
+                                        .setAction("Undo", new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+
+                                                core.updateFavoriteDB(0, cursorMovie.getString(COL_MOVIE_ID));
+                                                fabBtn.setImageResource(R.drawable.ic_plus);
+
+                                            }
+                                        })
+                                        .show();
+
+
+
                             } else {
                                 core.updateFavoriteDB(0, cursorMovie.getString(COL_MOVIE_ID));
+                                fabBtn.setImageResource(R.drawable.ic_plus);
+
+                                Snackbar.make(rootLayout, "Removed From Favorites!", Snackbar.LENGTH_SHORT)
+                                        .show();
+
                             }
+
+
+
+
                         }
                     });
+
+
+
+
                 }
                 break;
             case REVIEWS_LOADER:
@@ -224,9 +309,11 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
                 if (cursorReview.moveToFirst()) {
                     reviewTxt.setText("Reviews");
                     try {
-                        arrayAdapter = new reviewAdapter(getActivity(),R.layout.review_item,cursorReview,0);
-                        reviewList.setAdapter(arrayAdapter);
-                        setListViewHeightBasedOnChildren(reviewList);
+                        if (getActivity() != null) {
+                            arrayAdapter = new reviewAdapter(getActivity(), R.layout.review_item, cursorReview, 0);
+                            reviewList.setAdapter(arrayAdapter);
+                            setListViewHeightBasedOnChildren(reviewList);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -247,9 +334,11 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
                         });
                     }while (cursorVideo.moveToNext());
                     try {
-                        arrayAdapter2 = new videoAdapter(getActivity(),R.layout.review_item,cursorVideo,0);
-                        trailersList.setAdapter(arrayAdapter2);
-                        setListViewHeightBasedOnChildren(trailersList);
+                        if (getActivity() != null) {
+                            arrayAdapter2 = new videoAdapter(getActivity(), R.layout.review_item, cursorVideo, 0);
+                            trailersList.setAdapter(arrayAdapter2);
+                            setListViewHeightBasedOnChildren(trailersList);
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -454,4 +543,13 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
         }
         super.finalize();
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+
+
 }

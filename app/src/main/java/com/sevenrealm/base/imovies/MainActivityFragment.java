@@ -1,5 +1,6 @@
 package com.sevenrealm.base.imovies;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -92,6 +93,12 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public void onViewCreated(View view, Bundle savedInstanceState) {
         gridView = (GridView) view.findViewById(R.id.grid_view);
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
+        super.onResume();
     }
 
     @Override
@@ -190,11 +197,13 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                         fragmentTransaction.replace(R.id.fragment, fragment2);
                         fragmentTransaction.commit();
                     }else {
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.fragment, fragment2);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
-
+//                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//                        fragmentTransaction.replace(R.id.fragment, fragment2);
+//                        fragmentTransaction.addToBackStack(null);
+//                        fragmentTransaction.commit();
+                        Intent in = new Intent(getActivity(),DetailsActivity.class);
+                        in.putExtra("id",cursor.getInt(COL_MOVIE_UID));
+                        startActivity(in);
                     }
 
                 }
