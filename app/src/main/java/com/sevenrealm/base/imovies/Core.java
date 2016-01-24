@@ -36,6 +36,7 @@ public class Core {
     //Domain
     private String Domain = "https://api.themoviedb.org";
 
+
     //API calls
     private String get_movie_byid = Domain + "/3/movie/";
     private String all_movies_url = Domain + "/3/discover/movie?api_key=" + API_Key;
