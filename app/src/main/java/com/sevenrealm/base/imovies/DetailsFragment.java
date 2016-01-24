@@ -69,8 +69,9 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     static final int COL_MOVIE_FAV = 2;
     static final int COL_MOVIE_TITLE = 3;
     static final int COL_MOVIE_IMAGE = 4;
-    static final int COL_MOVIE_RELEASE = 5;
-    static final int COL_MOVIE_OVERVIEW = 6;
+    static final int COL_MOVIE_POSTER = 5;
+    static final int COL_MOVIE_RELEASE = 6;
+    static final int COL_MOVIE_OVERVIEW = 7;
 
     static final int COL_REVIEW_MOVIE_ID = 0;
     static final int COL_REVIEW_ID = 1;
@@ -100,6 +101,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
             Contract.MovieEntry.COLUMN_FAV,
             Contract.MovieEntry.COLUMN_TITLE,
             Contract.MovieEntry.COLUMN_IMAGE_PATH,
+            Contract.MovieEntry.COLUMN_POSTER_PATH,
             Contract.MovieEntry.COLUMN_RELEASE_DATE,
             Contract.MovieEntry.COLUMN_OVERVIEW
     };
@@ -234,7 +236,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
             case MOVIES_LOADER:
                 cursorMovie = data;
                 if (cursorMovie.moveToFirst()) {
-                    String url = new Core(getActivity()).large_image_url + cursorMovie.getString(COL_MOVIE_IMAGE);
+                    String url = new Core(getActivity()).xlarge_image_url + cursorMovie.getString(COL_MOVIE_POSTER);
                     Picasso.with(getActivity()).load(url).into(imageView);
 //                    title.setText(cursorMovie.getString(COL_MOVIE_TITLE));
                     collapsingToolbarLayout.setTitle(cursorMovie.getString(COL_MOVIE_TITLE) + " ("+ cursorMovie.getString(COL_MOVIE_RELEASE).substring(0,4) + ")");

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,19 +29,12 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import android.os.Handler;
+
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    ArrayList<MovieDataModel> movies = new ArrayList<>();
-    GridView gridView;
-    public int id = 0;
-    private int mLoader;
-
-    private int MOVIES_LOADER = 0;
-    private int FAV_LOADER = 1;
-    private int HIGH_RATE_LOADER = 2;
-
     static final int COL_MOVIE_ID = 0;
     static final int COL_MOVIE_UID = 1;
     static final int COL_MOVIE_FAV = 2;
@@ -48,17 +42,24 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     static final int COL_MOVIE_IMAGE = 4;
     static final int COL_MOVIE_RELEASE = 5;
     static final int COL_MOVIE_OVERVIEW = 6;
-
-    ImageAdapter imageAdapter;
     private static final String[] MOVIE_COLUMNS = {
             MovieEntry.TABLE_NAME + "." + MovieEntry._ID,
             MovieEntry.COLUMN_ID,
             MovieEntry.COLUMN_FAV,
             MovieEntry.COLUMN_TITLE,
             MovieEntry.COLUMN_IMAGE_PATH,
+            MovieEntry.COLUMN_POSTER_PATH,
             MovieEntry.COLUMN_RELEASE_DATE,
             MovieEntry.COLUMN_OVERVIEW
     };
+    public int id = 0;
+    ArrayList<MovieDataModel> movies = new ArrayList<>();
+    GridView gridView;
+    ImageAdapter imageAdapter;
+    private int mLoader;
+    private int MOVIES_LOADER = 0;
+    private int FAV_LOADER = 1;
+    private int HIGH_RATE_LOADER = 2;
 
     public MainActivityFragment() {
     }
@@ -82,8 +83,8 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        imageAdapter = new ImageAdapter(getActivity(),null,0);
+                             Bundle savedInstanceState) {
+        imageAdapter = new ImageAdapter(getActivity(), null, 0);
         getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         movies.clear();
         return inflater.inflate(R.layout.fragment_main, container, false);
@@ -116,12 +117,14 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
             getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             new loadingData(1).execute();
             return true;
-        }if (id == R.id.action_desc) {
+        }
+        if (id == R.id.action_desc) {
             mLoader = MOVIES_LOADER;
             getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
             new loadingData(0).execute();
             return true;
-        }if (id == R.id.action_fav){
+        }
+        if (id == R.id.action_fav) {
             mLoader = FAV_LOADER;
             getLoaderManager().restartLoader(MOVIES_LOADER, null, this);
         }
@@ -133,10 +136,10 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (mLoader == MOVIES_LOADER) {
             return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, MovieEntry._ID + " ASC");
-        }else if(mLoader == HIGH_RATE_LOADER){
+        } else if (mLoader == HIGH_RATE_LOADER) {
             return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, null, null, MovieEntry.COLUMN_VOTE_RATE + " DESC");
-        }else if (mLoader == FAV_LOADER){
-            return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, MovieEntry.COLUMN_FAV + " = ?",new String[]{String.valueOf(1)}, MovieEntry._ID + " ASC");
+        } else if (mLoader == FAV_LOADER) {
+            return new CursorLoader(getActivity(), MovieEntry.CONTENT_URI, MOVIE_COLUMNS, MovieEntry.COLUMN_FAV + " = ?", new String[]{String.valueOf(1)}, MovieEntry._ID + " ASC");
         }
         return null;
     }
@@ -169,22 +172,6 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
         @Override
         protected void onPostExecute(Object o) {
             gridView.setAdapter(imageAdapter);
-            gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                    Core core = new Core(getActivity());
-                    Cursor cursor = (Cursor) parent.getItemAtPosition(position);
-                    int ID = cursor.getInt(COL_MOVIE_ID);
-                    if (cursor.getInt(COL_MOVIE_FAV) == 1) {
-                        core.updateFavoriteDB(0, String.valueOf(ID));
-                        Toast.makeText(getActivity(), cursor.getString(COL_MOVIE_TITLE) + " removed from Favorite", Toast.LENGTH_SHORT).show();
-                    }else {
-                        core.updateFavoriteDB(1, String.valueOf(ID));
-                        Toast.makeText(getActivity(), cursor.getString(COL_MOVIE_TITLE) + " Added To Favorite", Toast.LENGTH_SHORT).show();
-                    }
-                    return true;
-                }
-            });
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
@@ -192,30 +179,23 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                     Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                     fragment2.setID(cursor.getInt(COL_MOVIE_UID));
                     FragmentManager fragmentManager = getFragmentManager();
-                    if (getActivity().findViewById(R.id.fragment_pane) != null){
+                    if (getActivity().findViewById(R.id.fragment_pane) != null) {
                         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                         fragmentTransaction.replace(R.id.fragment, fragment2);
                         fragmentTransaction.commit();
-                    }else {
+                    } else {
 //                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //                        fragmentTransaction.replace(R.id.fragment, fragment2);
 //                        fragmentTransaction.addToBackStack(null);
 //                        fragmentTransaction.commit();
-                        Intent in = new Intent(getActivity(),DetailsActivity.class);
-                        in.putExtra("id",cursor.getInt(COL_MOVIE_UID));
+                        Intent in = new Intent(getActivity(), DetailsActivity.class);
+                        in.putExtra("id", cursor.getInt(COL_MOVIE_UID));
                         startActivity(in);
                     }
 
                 }
             });
         }
-
-//        @Override
-//        protected void onProgressUpdate(Object[] values) {
-//            if (values[0].equals("1")) {
-//                Toast.makeText(getActivity(), "Failed To Load Data", Toast.LENGTH_SHORT).show();
-//            }
-//        }
 
         @Override
         protected Object doInBackground(Object[] params) {
@@ -224,14 +204,24 @@ public class MainActivityFragment extends Fragment implements LoaderManager.Load
                 JSONObject data = null;
                 if (orderFlag == 0) {
                     data = core.getMovies();
-                }else if (orderFlag == 1) {
+                } else if (orderFlag == 1) {
                     data = core.getMoviesRate();
-                }else  if (orderFlag == 2) {
+                } else if (orderFlag == 2) {
                     data = core.getMoviesAsc();
                 }
-                if (data != null){
+                if (data != null) {
                     results = data.getJSONArray("results");
-                    for (int i = 0; i < results.length() ;i++){
+                    DetailsFragment fragment2 = new DetailsFragment();
+
+                    fragment2.setID(results.getJSONObject(0).getInt("id"));
+                    FragmentManager fragmentManager = getFragmentManager();
+                    if (getActivity().findViewById(R.id.fragment_pane) != null) {
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment, fragment2);
+                        fragmentTransaction.commit();
+                    }
+
+                    for (int i = 0; i < results.length(); i++) {
                         JSONObject movie = results.getJSONObject(i);
                         MovieDataModel m = new MovieDataModel();
                         m.setId(movie.getInt("id"));

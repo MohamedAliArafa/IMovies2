@@ -185,6 +185,7 @@ public class Core {
         final String movie_id = "id";
         final String movie_title = "title";
         final String movie_image = "poster_path";
+        final String movie_poster = "backdrop_path";
         final String movie_overview = "overview";
         final String movie_release_date = "release_date";
         final String movie_vote_rate = "vote_average";
@@ -194,11 +195,12 @@ public class Core {
             Vector<ContentValues> cVVector = new Vector<>(movies.length());
 
             for (int i=0; i < movies.length();i++){
-                String id,title,image,overview,release_date,fav,vote_rate;
+                String id,title,image,poster,overview,release_date,fav,vote_rate;
                 JSONObject movie = movies.getJSONObject(i);
                 id = movie.getString(movie_id);
                 title = movie.getString(movie_title);
                 image = movie.getString(movie_image);
+                poster = movie.getString(movie_poster);
                 overview = movie.getString(movie_overview);
                 release_date = movie.getString(movie_release_date);
                 vote_rate = movie.getString(movie_vote_rate);
@@ -210,6 +212,7 @@ public class Core {
                 moviesValues.put(MovieEntry.COLUMN_FAV,fav);
                 moviesValues.put(MovieEntry.COLUMN_TITLE,title);
                 moviesValues.put(MovieEntry.COLUMN_IMAGE_PATH,image);
+                moviesValues.put(MovieEntry.COLUMN_POSTER_PATH,poster);
                 moviesValues.put(MovieEntry.COLUMN_OVERVIEW,overview);
                 moviesValues.put(MovieEntry.COLUMN_RELEASE_DATE,release_date);
                 moviesValues.put(MovieEntry.COLUMN_VOTE_RATE,vote_rate);

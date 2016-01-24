@@ -43,8 +43,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    protected void onStop() {
+        super.onStop();
         finish();
     }
 

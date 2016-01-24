@@ -1,11 +1,13 @@
 package com.sevenrealm.base.imovies;
 
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
     MainActivityFragment fragment;
@@ -17,7 +19,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        AppBarLayout appBar = (AppBarLayout) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
         if (findViewById(R.id.fragment_pane) != null){
+            appBar.setVisibility(View.GONE);
             mTwoPane = true;
             fragment = new MainActivityFragment();
             landHolder fragment1 = new landHolder();
@@ -55,8 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
     }
 
     @Override

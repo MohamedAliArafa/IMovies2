@@ -38,6 +38,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 MovieEntry.COLUMN_FAV + " INTEGER NOT NULL," +
                 MovieEntry.COLUMN_TITLE + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_IMAGE_PATH + " TEXT NOT NULL, " +
+                MovieEntry.COLUMN_POSTER_PATH + " TEXT NOT NULL, " +
                 MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL," +
                 MovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL," +
                 MovieEntry.COLUMN_VOTE_RATE + " REAL NOT NULL," +
