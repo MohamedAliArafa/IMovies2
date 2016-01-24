@@ -20,6 +20,7 @@ public class Contract {
         public static String TABLE_NAME = "movies";
         public static String COLUMN_FAV = "fav";
         public static String COLUMN_IMAGE_PATH = "image";
+        public static String COLUMN_POSTER_PATH = "image";
         public static String COLUMN_TITLE = "title";
         public static String COLUMN_OVERVIEW = "overview";
         public static String COLUMN_RELEASE_DATE = "release";
