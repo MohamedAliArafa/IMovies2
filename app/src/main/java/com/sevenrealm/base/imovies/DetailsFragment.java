@@ -72,6 +72,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     static final int COL_MOVIE_POSTER = 5;
     static final int COL_MOVIE_RELEASE = 6;
     static final int COL_MOVIE_OVERVIEW = 7;
+    static final int COL_MOVIE_RATE = 8;
 
     static final int COL_REVIEW_MOVIE_ID = 0;
     static final int COL_REVIEW_ID = 1;
@@ -103,7 +104,8 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
             Contract.MovieEntry.COLUMN_IMAGE_PATH,
             Contract.MovieEntry.COLUMN_POSTER_PATH,
             Contract.MovieEntry.COLUMN_RELEASE_DATE,
-            Contract.MovieEntry.COLUMN_OVERVIEW
+            Contract.MovieEntry.COLUMN_OVERVIEW,
+            Contract.MovieEntry.COLUMN_VOTE_RATE
     };
 
     private static final String[] REVIEW_COLUMNS = {
@@ -170,7 +172,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
         loadingReviews.execute();
         loadingTrailers.execute();
         mShareActionProvider = new ShareActionProvider(getContext());
-        return inflater.inflate(R.layout.fragment_blank, container, false);
+        return inflater.inflate(R.layout.fragment_details, container, false);
     }
 
     public void setID(int id){
@@ -194,13 +196,14 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 
         collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsingToolbarLayout);
         collapsingToolbarLayout.setTitle("");
+        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.CollapsedAppBar);
+        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.ExpandedAppBar);
 
 
         imageView = (ImageView) view.findViewById(R.id.imageView);
 //        title = (TextView) view.findViewById(R.id.textView);
         //   genre = (TextView) view.findViewById(R.id.textView2);
         vote = (TextView) view.findViewById(R.id.textView3);
-        tag = (TextView) view.findViewById(R.id.textView4);
         desc = (TextView) view.findViewById(R.id.textView5);
         trailerText = (TextView) view.findViewById(R.id.textView6);
         reviewTxt = (TextView) view.findViewById(R.id.textView7);
@@ -241,6 +244,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 //                    title.setText(cursorMovie.getString(COL_MOVIE_TITLE));
                     collapsingToolbarLayout.setTitle(cursorMovie.getString(COL_MOVIE_TITLE) + " ("+ cursorMovie.getString(COL_MOVIE_RELEASE).substring(0,4) + ")");
                     desc.setText(cursorMovie.getString(COL_MOVIE_OVERVIEW));
+                    vote.setText(cursorMovie.getString(COL_MOVIE_RATE)+"/10");
                     //  favButton.setVisibility(View.VISIBLE);
                     final Core core = new Core(getActivity());
                     //  favButton.setVisibility(View.VISIBLE);
@@ -337,7 +341,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
                     }while (cursorVideo.moveToNext());
                     try {
                         if (getActivity() != null) {
-                            arrayAdapter2 = new videoAdapter(getActivity(), R.layout.review_item, cursorVideo, 0);
+                            arrayAdapter2 = new videoAdapter(getActivity(), R.layout.trailer_item, cursorVideo, 0);
                             trailersList.setAdapter(arrayAdapter2);
                             setListViewHeightBasedOnChildren(trailersList);
                         }
@@ -360,27 +364,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     private class loading extends AsyncTask {
 
         JSONObject movie;
-//
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            String url;
-////            String gen = "";
-//            String v;
-//            if (id != 0) {
-//                try {
-//                    url = new Core(getActivity()).large_image_url + movie.getString("poster_path");
-//                    Picasso.with(getActivity()).load(url).into(imageView);
-//                    title.setText(movie.getString("title"));
-//                    genre.setText(movie.getString("release_date").substring(0,4));
-//                    v = "Vote " + movie.getString("vote_average") + " / 10 ";
-//                    vote.setText(v);
-//                    tag.setText(movie.getString("tagline"));
-//                    desc.setText(movie.getString("overview"));
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
+
 
         @Override
         protected Object doInBackground(Object[] params) {
@@ -399,32 +383,6 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 
     private class loadingReviews extends AsyncTask {
 
-//        ArrayList<String> Reviewlist;
-//
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            reviewTxt.setText("Reviews");
-//            String review = null;
-//            if (results != null) {
-//                for (int i = 0; i < results.length(); i++) {
-//                    try {
-//                        JSONObject movie = results.getJSONObject(i);
-//                        review = movie.getString("author") + " : \n" + movie.getString("content");
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Reviewlist.add(review);
-//                }
-//                try {
-//                    arrayAdapter = new reviewAdapter(getActivity(),R.layout.review_item,cursorReview,0);
-//                    reviewList.setAdapter(arrayAdapter);
-//                    setListViewHeightBasedOnChildren(reviewList);
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-
         @Override
         protected Object doInBackground(Object[] params) {
             Core core = new Core(getActivity());
@@ -442,56 +400,6 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     }
 
     private class loadingTrailers extends AsyncTask {
-
-//        ArrayList<String> trailerList;
-
-//        @Override
-//        protected void onPostExecute(Object o) {
-//            trailerText.setText("Trailers");
-//            String trailer = null;
-//            trailerList = new ArrayList<>();
-//            if (results != null) {
-//                try {
-//                    mVideo = "http://www.youtube.com/watch?v=" + results.getJSONObject(0).getString("key");
-//                    mTitle = results.getJSONObject(0).getString("name");
-//
-//                for (int i = 0; i < results.length(); i++) {
-//                    final JSONObject movie = results.getJSONObject(i);
-//                    trailer = movie.getString("type") + " : " + movie.getString("name") + " \n" + movie.getString("site");
-//                    trailersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                        @Override
-//                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                            try {
-//                                Toast.makeText(getActivity(), movie.getString("name"), Toast.LENGTH_SHORT).show();
-//                                try {
-//                                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + movie.getString("key")));
-//                                    startActivity(intent);
-//                                } catch (ActivityNotFoundException ex) {
-//                                    Intent intent = new Intent(Intent.ACTION_VIEW,
-//                                            Uri.parse("http://www.youtube.com/watch?v=" + movie.getString("key")));
-//                                    startActivity(intent);
-//                                }
-////                                    Intent in = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + movie.getString("key")));
-////                                    startActivity(in);
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    });
-//                    trailerList.add(trailer);
-//                }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    arrayAdapter2 = new videoAdapter(getActivity(), R.layout.review_item, cursorVideo,0);
-//                    trailersList.setAdapter(arrayAdapter2);
-//                    setListViewHeightBasedOnChildren(trailersList);
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
 
         @Override
         protected Object doInBackground(Object[] params) {
