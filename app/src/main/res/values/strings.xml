@@ -5,7 +5,7 @@
     <string name="action_desc">Order descending</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Choose a movie from the list</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="high_rated">High Rated</string>
     <string name="most_pop">Most Popular</string>

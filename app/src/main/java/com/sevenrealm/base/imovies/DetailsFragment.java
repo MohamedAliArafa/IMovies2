@@ -17,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -134,7 +135,6 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
         getLoaderManager().initLoader(MOVIES_LOADER, null, this);
         getLoaderManager().initLoader(REVIEWS_LOADER, null, this);
         getLoaderManager().initLoader(VIDEOS_LOADER, null, this);
@@ -162,10 +162,9 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-//        loading = new loading();
+        setHasOptionsMenu(true);
         loadingReviews = new loadingReviews();
         loadingTrailers = new loadingTrailers();
-//        loading.execute();
         loadingReviews.execute();
         loadingTrailers.execute();
         mShareActionProvider = new ShareActionProvider(getContext());
@@ -182,7 +181,8 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
 
 
 
-
+        final Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         rootLayout = (CoordinatorLayout) view.findViewById(R.id.rootLayout);
 
@@ -237,7 +237,7 @@ public class DetailsFragment extends Fragment implements LoaderManager.LoaderCal
                     String url = new Core(getActivity()).large_image_url + cursorMovie.getString(COL_MOVIE_IMAGE);
                     Picasso.with(getActivity()).load(url).into(imageView);
 //                    title.setText(cursorMovie.getString(COL_MOVIE_TITLE));
-                    collapsingToolbarLayout.setTitle(cursorMovie.getString(COL_MOVIE_TITLE));
+                    collapsingToolbarLayout.setTitle(cursorMovie.getString(COL_MOVIE_TITLE) + " ("+ cursorMovie.getString(COL_MOVIE_RELEASE).substring(0,4) + ")");
                     desc.setText(cursorMovie.getString(COL_MOVIE_OVERVIEW));
                     //  favButton.setVisibility(View.VISIBLE);
                     final Core core = new Core(getActivity());
